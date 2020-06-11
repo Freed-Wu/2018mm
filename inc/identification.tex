@@ -1,0 +1,183 @@
+\clearpage
+\section{基于评价和规划的识别模型}
+\subsection{模型的建立}
+\subsubsection{评价}
+声明结构体船，属性有船名、R、L1、L2和A。根据附件3定义所有船\(S_1..S_N\)。
+\\\indent 声明结构体R、L1、L2和A，属性为附件4给出的数据。根据附件4定义所有信号源\(A_1..A_{N_1},\\B_1..B_{N_2},C_1..C_{N_3},D_1..D_{N_4}\)。
+\\\indent 根据附件5定义船\(s_1..s_n\)和信号源\(a_1..a_{n_1},b_1..b_{n_2},c_1..c_{n_3},d_1..d_{n_4}\)。
+\\\indent 指标分为匹配指标和识别指标。
+\begin{description}
+	\item[匹配指标]必须要完全一样才能视为同一信号源。匹配成功记该指标得分为1，匹配失败记该指标得分为0。
+	\begin{align}
+		p(i_r(k),i_R(k))=
+		\begin{cases}
+			1	&	i_r(k)=i_R(k)	\\
+			0	&	i_r(k)\neq i_R(k)
+		\end{cases}
+	\end{align}
+	\par \(p\)是得分函数，\(i_r(k),i_R(k)\)为信号源\(r,R\)的第\(k\)个指标，是匹配指标。
+	\item[标量识别指标]得分记作两比较对象指标较小的除以指标较大的商，若两比较对象指标相同得分为1，若相差越大得分越小。
+	\begin{align}
+		p(i_r(k),i_R(k))=
+		\begin{cases}
+			\dfrac{i_r(k)}{i_R(k)}	&	i_r(k)\leqslant i_R(k)	\\
+			\dfrac{i_R(k)}{i_r(k)}	&	i_r(k)\geqslant i_R(k)
+		\end{cases}
+	\end{align}
+	\par \(i_r(k),i_R(k)\)为信号源\(r,R\)的第\(k\)个指标，是标量识别指标。
+	\item[向量识别指标]若两比较对象识别指标维度不同，得分记作0；若相同，将该指标拆解为多个不同的标量后作为标量识别指标计算得分，该指标得分记作所有标量识别指标得分之积。
+	\begin{align}
+		p(\bm{i}_r(k),\bm{i}_R(k))=
+		\begin{cases}
+			0										&	\mathrm{length}(\bm{i}_r(k))\neq\mathrm{length}(\bm{i}_R(k))		\\
+			\prod\limits_{j=1}^{J}p(\bm{i}_r(k)_j,\bm{i}_R(k)_j)	&	\mathrm{length}(\bm{i}_r(k))=\mathrm{length}(\bm{i}_R(k))=J
+		\end{cases}
+	\end{align}
+	\par \(\bm{i}_r(k),\bm{i}_R(k)\)为信号源\(r,R\)的第\(k\)个指标，是向量识别指标。\(\bm{i}_r(k)_j,\bm{i}_R(k)_j\)是信号源\(r,R\)的第\(k\)个指标的第\(j\)个分量。length(\(\bm{i}_r(k)\)),length\(\bm{i}_r(k)\))是信号源\(r,R\)的第\(k\)个指标的维度。
+\end{description}
+\par 为了避免对\(\dfrac{0}{0}\)进行定义为1的麻烦，所有的0用计算机能表示的最小正数eps取代。
+\\\indent 两信号源得分记作两信号源所有指标得分之积。两船舶的得分记作两船舶所有指标得分之积。
+\begin{align}
+	p(r,R)	&	=\prod\limits_{k=1}^Kp(i_r(k),i_R(k))	\\
+	p(s,S)	&	=\prod\limits_{l=1}^Lp(i_s(l),i_S(l))
+\end{align}
+\par \(r,R\)是信号源，\(s,S\)是船，\(i_r(k),i_R(k)(i_s(k),i_S(k)\)是\(r,R,s,S\)的第\(k\)个指标。
+\\\indent 总得分计算亦可使用累加的方式，实际上累加和累乘通过指数和对数一一对应。但综合以下原因选择累乘。
+\begin{enumerate}
+	\item 选择累加匹配失败得分必须记作\(-\infty\)，计算机无法真正表示\(-\infty\)；
+	\item 累乘可以设定分数上限，比如1，方便比较。
+\end{enumerate}
+\subsubsection{规划}
+用已知的\(N\)艘船舶识别未知的\(n\)艘船舶一共有\(N^n\)种单射，每种单射得分记作所有该单射包含元素得分之积。
+\begin{align}
+	&	\max p(f)		\\
+	&	\mathrm{s.t.}
+	\begin{cases}
+		p(f)=\prod\limits_{k=1}^np(s_k,f(s_k))		\\
+		\{f(s_k)|k=1..n\}\subseteq\{S_k|k=1..N\}		\\
+		p(s_k,f(s_k))>0
+	\end{cases}
+\end{align}
+\par 称\(f(s_k)\)为\(s_k\)的一个识别结果，称\((s_k,f(s_k))\)为1个识别对。
+\begin{enumerate}
+	\item 第1个约束条件是因为识别结果必须是数据库中已知的船；
+	\item 第2个约束条件是因为如果单射中有一个元素得分为0，由于连乘的性质，该单射得分为0，必定不是最优解。所以可以通过限制得分不为0的约束条件减少可行解的个数，更加方便地得到最优识别结果。
+\end{enumerate}
+\par 因为时间复杂度较小，可以通过暴力穷举搜索最优单射。
+\begin{align}
+	T(N^n)=\Theta(N^n)
+\end{align}
+\par 但该规划问题存在最优子结构，根据贪心算法只需暴力穷举搜索每艘船舶的最优识别结果，最优单射必是最优识别对的并。
+\begin{align}
+	&	\max p(f)		\\
+	&	\mathrm{s.t.}
+	\begin{cases}
+		p(f)=\prod\limits_{k=1}^n\max\limits_{f(s_k)\in\{S_k|k=1..N\}}p(s_k,f(s_k))	\\
+		p(s_k,f(s_k))>0												\\
+	\end{cases}
+\end{align}
+\par 时间复杂度会进一步下降。
+\begin{align}
+	T(Nn)=\Theta(Nn)
+\end{align}
+\subsection{模型的求解}
+求解得到信号源识别结果和船只识别结果如下表所示。
+\begin{table}[htbp]
+	\centering
+	\caption{船舶识别结果}
+	\begin{tabular}{ccc}
+		\toprule
+		目标编号		&	船舶名称			&	得分			\\
+		\midrule
+		101			&	DBE-AY02  		&	0.930799861	\\
+		104			&	DBH-SS02     		&	0.940527104	\\
+		107			&	DBC-JZ    		&	0.917167393	\\
+		110			&	DBE-KDX1-YZWD	&	0.930959406	\\
+		113			&	DBH-SS01		&	0.976011509	\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\begin{table}[htbp]
+	\centering
+	\begin{minipage}[htbp]{7.5cm}
+		\centering
+		\caption{R类信号源识别结果}
+		\begin{tabular}{ccc}
+			\toprule
+			信号源批次	&	信号源名称	&	得分			\\
+			\midrule
+			1011			& 	DRZ-60  		&	0.984037276 	\\
+			1012		&	DRQ-7646	&	0.987897002	\\
+			1013		&	DRL-75		&	0.967058036	\\
+			1041		&	DRZ-59		&	0.978429748	\\
+			1042		&	DRJ-72		&	0.982316416	\\
+			1043		&	DRQ-7646	&	0.98102878	\\
+			1071		&	DRU-7862	&	0.993292874	\\
+			1072		&	DRB-7A		&	0.968448844	\\
+			1073		&	DRL-49		&	0.960267684	\\
+			1101			&	DRZ-60		&	0.971984401	\\
+			1102 		&	DRK-89		&	0.98550102	\\
+			1103 		&	DRN-8799I7	&	0.977801401	\\
+			1131 		&	DRN-8799I7	&	0.976011509	\\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}
+	\begin{minipage}[htbp]{7.5cm}
+		\centering
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{L1类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分			\\
+				\midrule
+				1014		&	DL9-Q9		&	0.997071899	\\
+				1044		&	DL9-Q3		&	0.997489923	\\
+				1074		&	DL9-Q8		&	0.992892631	\\
+				1104			&	DL9-P3		&	0.993948117	\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{L2类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分			\\
+				\midrule
+				1015		&	DL5-Q5		&	0.993011041	\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{A类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分		\\
+				\midrule
+				1106			&	DA-P5A		&	1		\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+	\end{minipage}
+\end{table}
+\newpage
+\subsection{模型的检验}
+模型求解结果中每一船舶最优解的得分虽然接近1，但如果所有解都普遍接近1，则识别结果的可信度会令人怀疑。
+\\\indent 为此，计算每一船舶所有解得分的平均值，可见求得的最优解得分显著超过平均值。
+\begin{table}[htbp]
+	\centering
+	\caption{得分比较}
+	\begin{tabular}{ccc}
+		\toprule
+		目标编号	&	最优得分	&	平均得分		\\
+		\midrule
+		101	&	0.930799861	&	4.12273E-05	\\
+		104	&	0.940527104	&	1.46971E-05	\\
+		107	&	0.917167393	&	9.04712E-05	\\
+		110	&	0.930959406	&	8.85545E-05	\\
+		113	&	0.976011509	&	0.06231429	\\
+		\bottomrule
+	\end{tabular}
+\end{table}

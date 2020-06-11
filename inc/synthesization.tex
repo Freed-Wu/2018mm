@@ -1,0 +1,150 @@
+\clearpage
+\section{基于去误差、聚类、识别的综合模型}
+\subsection{模型的建立}
+综合上述3种模型对附件6进行数据处理。
+\subsection{模型的求解}
+\begin{figure}[htbp]
+	\centering
+	\caption{已识别的R类信号源运动时空轨迹}
+	\includegraphics[width=8cm]{move2.eps}
+\end{figure}
+\par 一共有11艘船舶。
+\begin{table}[htbp]
+	\centering
+	\caption{聚类结果}\tiny
+	\begin{tabular}{cccccccc}
+		\toprule
+		船舶编号   & 船舶名称        & R类信号源1         & R类信号源2   & R类信号源3         & LI1类信号源 & L2类信号源 & A类信号源  \\
+		\midrule
+		366009 & DBM-HSD01   & DRH-8          & DRZ-60   & DRJ-62         & DL9-Z8  & DL5-Z7 & DA-Z7V \\
+		431014 & DBG-WD      & DRL-49         & DRU-7862 & DRB-7A         & DL9-Q8  & -      & DA-Q3B \\
+		440005 & DBC-JZD     & DRP-4857-80S81 & -        & -              & -       & -      & DA-P4A \\
+		431001 & DBE-AY01    & DRL-75         & DRZ-60   & DRQ-7646       & DL9-Q9  & DL5-Q5 & DA-Q5C \\
+		366001 & DBE-HSD02   & DRZ-60         & DRJ-72   & DRQ-7646       & DL9-Z9  & -      & DA-Z9C \\
+		366006 & DBH-HSD03   & DRJ-72         & DRK-67   & -              & DL9-Z5  & -      & DA-Z7A \\
+		431007 & DBH-SS01    & DRZ-59         & DRJ-72   & DRQ-7646       & DL9-Q3  & -      & DA-Q1A \\
+		431012 & DBH-AWW01   & DRX-6Z         & DRU-7862 & DRQ-7645       & DL9-Q3  & -      & DA-Q4F \\
+		366013 & DBX-TKDLJ01 & DRK-40         & DRK-89   & DRH-8          & DL9-Z6  & -      & DA-Z4B \\
+		431010 & DBH-XZ02    & DRZ-59         & DRX-6Z   & DRQ-7646       & DL9-Q9  & -      & DA-Q4C \\
+		431003 & DBE-JG01    & DRJ-72         & DRU-7862 & DRP-4857-80S81 & DL9-Q6  & -      & DA-Q5F\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\begin{table}[htbp]
+	\centering
+	\begin{minipage}[htbp]{7.5cm}
+		\centering
+		\caption{R类信号源识别结果}
+		\begin{tabular}{ccc}
+			\toprule
+			信号源批次	&	信号源名称	&	得分			\\
+			\midrule
+			109  & DRJ-62         & 0.9847 \\
+			112  & DRZ-60         & 0.9669 \\
+			124  & DRH-8          & 0.9463 \\
+			129  & DRQ-7646       & 0.9841 \\
+			139  & DRJ-72         & 0.969  \\
+			146  & DRZ-60         & 0.9803 \\
+			158  & DRQ-7699N\footnote{得分过低不具有可信度，该信号源不在数据库中。}     & 0.0006 \\
+			178  & DRK-40         & 0.9668 \\
+			184  & DRH-8          & 0.9584 \\
+			212  & DRK-89         & 0.9886 \\
+			225  & DRK-67         & 0.9878 \\
+			239  & DRZ-60         & 0.9725 \\
+			251  & DRL-75         & 0.9689 \\
+			256  & DRQ-7646       & 0.9771 \\
+			274  & DRZ-59         & 0.9891 \\
+			278  & DRJ-72         & 0.9851 \\
+			282  & DRQ-7646       & 0.9858 \\
+			289  & DRU-7862       & 0.9831 \\
+			292  & DRB-7A         & 0.9729 \\
+			1031 & DRJ-72         & 0.9819 \\
+			1113 & DRP-4857-80S81 & 0.9775 \\
+			1169 & DRU-7862       & 0.9821 \\
+			1225 & DRU-7862       & 0.9907 \\
+			1297 & DRL-49         & 0.9629 \\
+			1326 & DRQ-7645       & 0.9887 \\
+			1373 & DRZ-59         & 0.9855 \\
+			1391 & DRX-6Z         & 0.9724 \\
+			1405 & DRQ-7646       & 0.9938 \\
+			1416 & DRX-6Z         & 0.9478 \\
+			1425 & DRP-4857-80S81 & 0.9741 \\
+			1476 & DRN-8789G      & 0.9748	\\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}
+	\begin{minipage}[htbp]{7.5cm}
+		\centering
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{L1类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分			\\
+				\midrule
+				304 & DL9-Q8 & 0.9964 \\
+				314 & DL9-Z8 & 0.9931 \\
+				317 & DL9-Z9 & 0.9916 \\
+				319 & DL9-Q9 & 0.9964 \\
+				323 & DL9-Z5 & 0.9935 \\
+				327 & DL9-Q3 & 0.9967 \\
+				330 & DL9-Z6 & 0.9935 \\
+				345 & DL9-Q9 & 0.995  \\
+				360 & DL9-Q3 & 0.9982 \\
+				365 & DL9-Q6 & 0.9902	\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{L2类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分			\\
+				\midrule
+				438 & DL5-Z7 & 0.9916226  \\
+				736 & DL5-Q5 & 0.98549412	\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+		\begin{minipage}[htbp]{7.5cm}
+			\centering
+			\caption{A类信号源识别结果}
+			\begin{tabular}{ccc}
+				\toprule
+				信号源批次	&	信号源名称	&	得分		\\
+				\midrule
+				1501 & DA-Z7V & 1 \\
+				1503 & DA-Q3B & 1 \\
+				1584 & DA-P4A & 1	\\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}
+	\end{minipage}
+\end{table}
+\clearpage
+\clearpage
+\newpage
+\subsection{模型的检验}
+\begin{table}[htbp]
+	\centering
+	\caption{得分比较}
+	\begin{tabular}{ccc}
+		\toprule
+		船舶编号	&	最优得分		&	平均得分	\\
+		\midrule
+		366009 & 0.9011 & 6.27E-05 \\
+		431014 & 0.9209 & 1.80E-04 \\
+		440005 & 0.9741 & 5.60E-03 \\
+		431001 & 0.9206 & 1.35E-04 \\
+		366001 & 0.9348 & 8.84E-05 \\
+		366006 & 0.9878 & 3.20E-03 \\
+		431007 & 0.9161 & 5.87E-04 \\
+		431012 & 0.9332 & 2.15E-04 \\
+		366013 & 0.9282 & 1.54E-04 \\
+		431010 & 0.9426 & 1.75E-04 \\
+		431003 & 0.9148 & 8.34E-04	\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\par 可以看到船舶的最优识别得分远远大于平均得分。
